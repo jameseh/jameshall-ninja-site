@@ -7,7 +7,6 @@ from jinja2 import Environment, FileSystemLoader
 
 
 from config import Config
-from models.user import User
 from utils.auth import Auth
 from utils.security import Security
 from utils.db import DB
