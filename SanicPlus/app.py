@@ -4,7 +4,6 @@ from base64 import b64encode
 from sanic import Sanic
 from sanic.response import html, json
 from jinja2 import Environment, FileSystemLoader
-from sqlalchemy import column
 
 
 from config import Config
@@ -186,14 +185,8 @@ async def register_post(request):
     if db.get_session().query(User).filter_by(username=username).all():
         return json({"message": "Username already taken"})
 
-    # Create a new user and set its password and salt properties
-    user = User(username, hashed_password)
-
     # Add the user to the database
     db.add_user(username, hashed_password)
-
-    # Update user in config
-    app.config.DB_USER = user
 
     # Redirect the user to the dashboard page
     return html(env.get_template("dashboard.html").render(
@@ -217,4 +210,4 @@ async def dashboard(request):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=443, debug=False)
