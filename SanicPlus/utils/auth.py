@@ -1,5 +1,4 @@
 from cryptography.hazmat.primitives.asymmetric import rsa
-
 import jwt
 from sanic.response import redirect
 from functools import wraps

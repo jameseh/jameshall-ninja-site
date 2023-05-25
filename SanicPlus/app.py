@@ -43,9 +43,8 @@ async def homepage(request):
     posts = db.get_posts()
 
     # Convert the images to a base64 string
-    if posts:
-        for post in posts:
-            b64encode(post.image)
+    for post in posts:
+        post = b64encode(post.image)
 
     # Render the homepage template
     return html(env.get_template("index.html").render(
@@ -76,9 +75,8 @@ async def contact(request):
 
 @app.route("/blog")
 async def blog(request):
-    # Get the blog posts from the database
-    with db.get_session() as session:
-        posts = session.query(column("BlogPosts")).all()
+    # Get the blog posts from firestore
+    posts = db.get_post_by_type("Blog")
 
     # Render the blog page template with the blog posts
     return html(env.get_template("blog.html").render(
@@ -88,8 +86,7 @@ async def blog(request):
 @app.route("/projects")
 async def projects(request):
     # Get the project from the database
-    with db.get_session() as session:
-        posts = session.query(column("Project")).all()
+    posts = db.get_post_by_type("Project")
 
     # Render the projects page template with the projects
     return html(env.get_template("projects.html").render(
