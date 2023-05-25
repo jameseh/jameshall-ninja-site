@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>My Blog</h2>
+  <p>This is where I will post my blog posts.</p>
+  <ul>
+    {% for post in posts %}
+      <li>
+        <a href="/blog/{{ post.slug }}">
+          <h3>{{ post.title }}</h3>
+          <img src="{{ post.image }}" alt="{{ post.title }}">
+          <p>{{ post.excerpt }}</p>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="/blog">View all blog posts</a>
+{% endblock %}

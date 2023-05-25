@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Contact Us</h1>
+  <p>We would love to hear from you! Please use the form below to contact us with any questions or comments.</p>
+  <form action="/contact_us" method="post">
+    <input type="text" name="name" placeholder="Your Name">
+    <input type="email" name="email" placeholder="Your Email">
+    <input type="text" name="subject" placeholder="Subject">
+    <textarea name="message" rows="10" cols="50" placeholder="Your Message"></textarea>
+    <input type="submit" value="Submit">
+  </form>
+
+  <p>You can also contact us by phone at (555) 555-5555 or by mail at:</p>
+  <p>
+    Homeward Bound Animal Welfare Foundation
+    123 Main Street
+    Anytown, CA 12345
+  </p>
+
+{% endblock %}

@@ -1,0 +1,265 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin-left: 250px;
+  margin-top: 100px;
+  margin-bottom: 16px;
+  background-color: #fafdfd;
+  }
+
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #006973;
+  }
+
+p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+  text-indent: 20px;
+  }
+
+main {
+  color: #3f484a;
+  }
+
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 56px;
+  background-color: #001f24;
+  z-index: 11;
+  box-shadow: inset 2px 6px 6px 0px rgba(0, 0, 0, 0.12),
+    0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+  }
+
+.top-bar h1 {
+  color: #ffffff;
+  }
+
+.top-bar .top-bar-title {
+  color: #ffffff;
+  z-index: 11;
+  margin-left: 32px;
+  position: absolute;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  }
+
+@media (min-width: 577px) {
+  .top-bar {
+    display: block;
+    }
+  }
+
+@media (max-width: 576px) {
+  .top-bar {
+    display: none;
+    }
+  }
+
+@media (max-width: 576px) {
+  body {
+    padding-top: 300px;
+    transition: padding-top 0.3s ease-in-out;
+    }
+
+  .menu--open {
+    transform: translateY(0);
+    }
+  }
+
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  box-shadow: inset 2px 6px 6px 0px rgba(0, 0, 0, 0.12),
+    0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+  background-color: #94f1ff;
+  border-radius: 0;
+  z-index: 10;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+  transition: transform 0.3s;
+  }
+
+.menu--open {
+  transform: translateY(-100%);
+  }
+
+.menu__item {
+  position: relative;
+  font-family: 'Montserrat 700', sans-serif;
+  letter-spacing: 5px;
+  display: flex;
+  padding: 16px;
+  font-size: 18px;
+  color: #001f24;
+  width: 100%;
+  transition: background-color 0.3s;
+  justify-content: flex-start;
+  margin: 0px auto;
+  }
+
+.menu__item a {
+  color: #001f24;
+  text-decoration: none;
+  }
+
+.menu__item a:visited {
+  color: #001f24;
+  }
+
+.menu__item:hover a{
+  color: #ffffff;
+  }
+
+.menu__item:hover a:visited {
+  color: #ffffff;
+  }
+
+.menu__item:hover {
+  background-color: #001f24;
+  transform: scale(1.08);
+  transition: all 0.6s ease-in-out;
+  }
+
+.menu__item .material-icons {
+  margin-right: 32px;
+  }
+
+.menu__item:hover .material-icons {
+  color: #ffffff;
+  }
+
+@media (max-width: 576px) {
+  body {
+    margin-left: 0;
+    }
+
+  .menu {
+    position: fixed;
+    width: 100%;
+    height: auto;
+    transition: transform 0.6s;
+    align-items: center;
+    padding-top: 0;
+    top: 0;
+    left: 0;
+    padding: 0;
+    overflow-x: hidden;
+    }
+
+  .menu--open {
+    transform: translateY(-90%);
+    }
+
+  #hamburger-menu i {
+    width: 32px;
+    height: 32px;
+    color: #94f1ff;
+    background-color: #001f24;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    }
+}
+
+.social-icons {
+  background-color: transparent;
+  z-index: 11;
+  position: absolute;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  }
+
+.social-icons a { 
+  color: #94f1ff;
+  font-size: 26px;
+  margin-right: 32px;
+  }
+
+.social-icons a:hover {
+  color: #ffffff;
+  }
+
+@media (min-width: 577px) {
+  .menu__item:hover .fab {
+    color: #ffffff !important;
+    }
+  }
+
+.menu__item {
+  cursor: pointer;
+  }
+
+#hamburger-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  }
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: calc(100% - 250px);
+  background-color: #dbe4e6;
+  text-align: center;
+  padding: 10px 0;
+  transition: width 0.3s;
+  color: #191c1d;
+  }
+
+.footer-social-icons {
+  display: none;
+  }
+
+.footer-social-icons {
+  display: block;
+  justify-content: center;
+  }
+
+.footer-social-icons i {
+  color: #000000;
+}
+
+.footer-social-icons a:hover i {
+  text-shadow: 0 2px 2px #001f24;
+  color: #94f1ff;
+}
+
+@media (max-width: 576px) {
+  footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    }
+  }
+
+main {
+  margin: 100px;
+  color: #191c1d;
+  }
+
+#hamburger-menu {
+  height: 20px;
+  background-color: #001f24;
+}
+
+#hamburger-menu:hover i {
+  color: #94f1ff;
+  background-color: #001f24;
+  }

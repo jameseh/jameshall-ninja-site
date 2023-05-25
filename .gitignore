@@ -1,0 +1,8 @@
+__pycache__
+.env
+Procfile
+Dockerfile
+*.swp
+*.pyc
+*.egg-info
+SanicPlus.db

@@ -1,0 +1,9 @@
+sqlalchemy
+jinja2
+sanic
+wtforms
+pytest
+bcrypt
+pyjwt
+cryptography
+pyjwt

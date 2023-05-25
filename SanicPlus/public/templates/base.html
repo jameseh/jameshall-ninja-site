@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title }}</title>
+
+  <!-- Material fonts documentation : https://developers.google.com/fonts/docs/getting_started -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap">
+
+  <!-- Material Icons documentation: https://developers.google.com/fonts/docs/material_icons -->
+  <!-- Material Icons: https://fonts.google.com/icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+  <!-- Font Awesome documentation: https://fontawesome.com/v5/get-started/svg-with-js -->
+  <!-- Font Awsome Icons: https://fontawesome.com/v5/search -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  
+  <link rel="stylesheet" href="/public/css/style.css">
+</head>
+
+<body>
+  <!-- Top bar to display logo, website name, social icons, etc. -->
+  <div class="top-bar">
+    <div class="top-bar top-bar-title" id="top-bar-title">
+      <h1>jameshall.ninja</h1>
+    </div>
+  </div>
+
+    <!-- These social icons are only visible on screens that are 577px or more in width -->
+    <div class="top-bar social-icons" id="social-icons">
+      <a href="https://github.com/jameseh"><i class="fab fa-github"></i></a>
+      <a href="https://g.dev/jameseh"><i class="fab fa-google"></i></a>
+    </div>
+
+  <!-- Define the menu and it's items -->
+  <div class="menu" id="menu">
+    <div class="menu__item">
+      <a href="/">
+      <i class="material-icons">home</i>
+      <span>home</span>
+      </a>
+    </div>
+    <div class="menu__item">
+      <a href="/blog">
+      <i class="material-icons">newspaper</i>
+      <span>blog</span>
+      </a>
+    </div>
+    <div class="menu__item">
+      <a href="/projects">
+      <i class="material-icons">code</i>
+      <span>projects</span>
+      </a>
+    </div>
+    <div class="menu__item">
+      <a href="/about">
+      <i class="material-icons">info</i>
+      <span>about</span>
+      </a>
+    </div>
+
+    <!-- Show the logout and dashboard menu options if a user is not logged in. -->
+    {% if user %}
+      <div class="menu__item">
+        <a href="/dashboard">
+        <i class="material-icons">dashboard</i>
+        <span>dashboard</span>
+        </a>
+      </div>
+
+      <div class="menu__item">
+        <a href="/logout">
+        <i class="material-icons">logout</i>
+        <span>logout</span>
+        </a>
+      </div>
+
+    <!-- Show the login menu option if a user is not logged in -->
+    {% else %}
+      <div class="menu__item">
+        <a href="/login">
+        <i class="material-icons">login</i>
+        <span>login</span>
+        </a>
+      </div>
+
+    {% endif %}
+    <!-- The hamburger menu is only visible on screens that are 576 or less in width-->
+    <div class="menu__item" id="hamburger-menu">
+      <i class="material-icons">menu</i>
+    </div>
+  </div>
+
+  <main>
+    <!-- Load the page contents -->
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <footer>
+    Copyright 2023 James Hall. Licensed under the open-source MIT license.
+
+    <!-- These social icons are only visible on screens that are 576px or less in width -->
+    <div class="footer-social-icons" id="footer-social-icons">
+      <a href="https://github.com/jameseh"><i class="fab fa-github"></i></a>
+      <a href="https://g.dev/jameseh"><i class="fab fa-google"></i></a>
+    </div>
+
+  <!-- Improve the loading speed of the HTML by loading JavaScript at the bottom of the page -->
+  <script src="/public/js/main.js"></script>
+ </body>
+</html>

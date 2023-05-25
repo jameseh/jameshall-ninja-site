@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="/public/css/index.css">
+{% endblock %}
+
+{% block content %}
+  <h1>Blog Posts / My Projects</h1>
+  <p>
+  <table>
+    <thead>
+      <tr>
+        <th>Blog Posts</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+        <tr>
+          <td>
+            <figure><img src="{{ post.image }}" alt="{{ post.title }}"></figure>
+            <div class="post-title">{{ post.title }}</div>
+            <div class="post-description">{{ post.description }}</div>
+            <div class="post-info">
+              <span class="post-date">Created: {{ post.created_at }}</span>
+              {% if post.updated_at %}
+                <span class="post-updated">Updated: {{ post.updated_at }}</span>
+              {% endif %}
+              <span class="post-user">User: {{ post.user }}</span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</p>
+{% endblock %}
+
+<script src="/public/js/index.js"></script>

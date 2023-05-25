@@ -1,0 +1,38 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid black;
+  padding: 10px;
+}
+
+figure {
+  max-width: 200px;
+  float: left;
+  margin-right: 10px;
+}
+
+figcaption {
+  text-align: center;
+}
+
+.post-title {
+  font-size: 18px;
+}
+
+.post-description {
+  font-size: 16px;
+}
+
+.post-date {
+  text-align: right;
+  font-size: 0.8rem;
+}
+
+.post-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}

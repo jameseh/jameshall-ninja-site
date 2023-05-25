@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Register</h2>
+  <form action="/register" method="post">
+    {% for error in errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+    <input type="text" name="username" placeholder="Username">
+    <input type="password" name="password" placeholder="Password">
+    <input type="password" name="confirm_password" placeholder="Confirm Password">
+    <input type="submit" value="Register">
+  </form>
+{% endblock %}

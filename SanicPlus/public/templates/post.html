@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Create a new post</h2>
+
+  <form action="/post" method="post" id="create_post">
+    <input type="text" name="title" placeholder="Title">
+    <input type="text" name="description" placeholder="Description">
+    <input type="file" name="image">
+    <select name="type" id="type" form="create_post">
+      <option value="blog">Blog</option>
+      <option value="project">Project</option>
+    </select>
+    <input type="submit" value="Create Post">
+  </form>
+
+{% endblock %}
