@@ -6,7 +6,7 @@ COPY . .
 
 RUN pip install -r requirements.txt
 
-EXPOSE 443
+EXPOSE 8080
 
 WORKDIR SanicPlus
 
