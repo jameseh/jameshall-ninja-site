@@ -1,13 +1,11 @@
 FROM python:3.11-slim
 
-WORKDIR /
+WORKDIR /app
 
-COPY . .
+COPY SanicPlus .
 
 RUN pip install -r requirements.txt
 
-EXPOSE 8080
-
-WORKDIR SanicPlus
+ENV PYTHONPATH=.
 
 CMD ["python", "app.py"]
