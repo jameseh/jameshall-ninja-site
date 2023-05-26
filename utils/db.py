@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from google.cloud import firestore
+from google.cloud import datastore
 
 from utils.security import Security
 
@@ -8,7 +8,7 @@ from utils.security import Security
 class DB:
     def __init__(self, app):
         self.app = app
-        self.db = firestore.Client()
+        self.db = datastore.Client()
         self.security = Security()
         self.create_user_kind()
         self.create_post_kind()
