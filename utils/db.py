@@ -76,7 +76,7 @@ class DB:
             "image": image,
             "user": user,
             "type": type,
-            "created_at": firestore.Timestamp.now(),
+            "created_at": datastore.Timestamp.now(),
             "updated_at": "",
         }
         self.db.collection("posts").document().set(post_document)
@@ -94,7 +94,7 @@ class DB:
             "user": user,
             "type": type,
             "created_at": created_at,
-            "updated_at": firestore.Timestamp.now(),
+            "updated_at": datastore.Timestamp.now(),
         })
         self.db.collection("posts").document(id).set(post_document)
 
