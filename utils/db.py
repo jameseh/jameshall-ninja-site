@@ -1,4 +1,5 @@
 from uuid import uuid4
+from os import environ
 
 from google.cloud import datastore
 
@@ -8,7 +9,7 @@ from utils.security import Security
 class DB:
     def __init__(self, app):
         self.app = app
-        self.db = datastore.Client()
+        self.db = datastore.Client(environ("PROJECT_ID"))
         self.security = Security()
 
     def create_user_kind(self):

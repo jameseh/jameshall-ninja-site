@@ -1,10 +1,10 @@
 import logging
-from os import environ
 from base64 import b64encode
+from os import environ
+
 from sanic import Sanic
 from sanic.response import html, json
 from jinja2 import Environment, FileSystemLoader
-
 
 from config import Config
 from utils.auth import Auth
@@ -15,6 +15,7 @@ from utils.db import DB
 # Setup app
 app = Sanic(Config.APP_NAME)
 app.update_config(Config)
+port = environ("PORT")
 
 # Initiate database, to do: add configuration options
 db = DB(app)
@@ -181,7 +182,7 @@ async def register_post(request):
     hashed_password = security.hash_password(password)
 
     # Check if the username is already taken
-    if db.get_session().query(User).filter_by(username=username).all():
+    if db.get_user_by_username(username):
         return json({"message": "Username already taken"})
 
     # Add the user to the database
@@ -209,4 +210,4 @@ async def dashboard(request):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
