@@ -13,6 +13,7 @@ from utils.db import DB
 
 # Setup app
 app = Sanic('jameshall_ninja_site')
+port = os.environ("PORT")
 
 # Initiate database, to do: add configuration options
 db = DB(app)
@@ -207,4 +208,4 @@ async def dashboard(request):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=os.environ("PORT"), debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
