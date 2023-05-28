@@ -1,6 +1,5 @@
 import logging
 from base64 import b64encode
-from os import environ
 
 from sanic import Sanic
 from sanic.response import html, json
@@ -15,7 +14,6 @@ from utils.db import DB
 # Setup app
 app = Sanic(Config.APP_NAME)
 app.update_config(Config)
-port = environ("PORT")
 
 # Initiate database, to do: add configuration options
 db = DB(app)
@@ -210,4 +208,4 @@ async def dashboard(request):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=8080, debug=False)
