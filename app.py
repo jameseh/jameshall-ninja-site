@@ -5,15 +5,13 @@ from sanic import Sanic
 from sanic.response import html, json
 from jinja2 import Environment, FileSystemLoader
 
-from config import Config
 from utils.auth import Auth
 from utils.security import Security
 from utils.db import DB
 
 
 # Setup app
-app = Sanic(Config.APP_NAME)
-app.update_config(Config)
+app = Sanic('jameshall_ninja_site')
 
 # Initiate database, to do: add configuration options
 db = DB(app)
