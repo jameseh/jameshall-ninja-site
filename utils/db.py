@@ -10,6 +10,7 @@ class DB:
     def __init__(self, app):
         self.app = app
         self.db = datastore.Client(environ("PROJECT_ID"))
+        self.query = self.db.query()
         self.security = Security()
 
     def create_user_kind(self):
@@ -34,7 +35,7 @@ class DB:
 
     def login(self, request, username, password):
         # Get the user document
-        query = self.db.query(kind="users")
+        query = self.query(kind="users")
         query.filter("username", username)
         user_document = query.get()
 
@@ -46,21 +47,21 @@ class DB:
 
     def get_user_by_username(self, username):
         # Get the user document
-        query = self.db.query(kind="users")
+        query = self.query(kind="users")
         query.filter("username", username)
         user_document = query.get()
         return user_document
 
     def get_user_by_id(self, user_id):
         # Get the user document
-        query = self.db.query(kind="users")
+        query = self.query(kind="users")
         query.filter("id", user_id)
         user_document = query.get()
         return user_document
 
     def get_password(self, username):
         # Get the user document
-        query = self.db.query(kind="users")
+        query = self.query(kind="users")
         query.filter("username", username)
         user_document = query.get()
 
@@ -71,13 +72,13 @@ class DB:
 
     def get_posts(self):
         # Get all posts
-        query = self.db.query(kind="posts")
+        query = self.query(kind="posts")
         posts = query.fetch()
         return posts
 
     def get_post(self, id):
         # Get the post document
-        query = self.db.query(kind="posts")
+        query = self.query(kind="posts")
         query.filter("id", id)
         post_document = query.get()
         return post_document
@@ -98,7 +99,7 @@ class DB:
     def update_post(self, id, title, description, image, user, type,
                     created_at):
         # Get the post document
-        query = self.db.query(kind="posts")
+        query = self.query(kind="posts")
         query.filter("id", id)
         post_document = query.get()
 
@@ -116,7 +117,7 @@ class DB:
 
     def delete_post(self, id):
         # Delete the post document
-        query = self.db.query(kind="posts")
+        query = self.query(kind="posts")
         query.filter("id", id)
         post_document = query.get()
         self.db.delete(post_document)
