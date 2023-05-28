@@ -34,8 +34,9 @@ class DB:
 
     def login(self, request, username, password):
         # Get the user document
-        user_document = self.db.query(kind="users").filter(
-                "username", username).get()
+        query = self.db.query(kind="users")
+        query.filter("username", username)
+        user_document = query.get()
 
         # Check if the user exists and the password is correct
         if user_document is not None and self.security.verify_password(
@@ -45,16 +46,23 @@ class DB:
 
     def get_user_by_username(self, username):
         # Get the user document
-        return self.db.query(kind="users").filter("username", username).get()
+        query = self.db.query(kind="users")
+        query.filter("username", username)
+        user_document = query.get()
+        return user_document
 
     def get_user_by_id(self, user_id):
         # Get the user document
-        return self.db.query(kind="users").filter("id", user_id).get()
+        query = self.db.query(kind="users")
+        query.filter("id", user_id)
+        user_document = query.get()
+        return user_document
 
     def get_password(self, username):
         # Get the user document
-        user_document = self.db.query(kind="users").filter(
-                "username", username).get()
+        query = self.db.query(kind="users")
+        query.filter("username", username)
+        user_document = query.get()
 
         # Check if the user exists
         if user_document is not None:
@@ -62,18 +70,17 @@ class DB:
         return None
 
     def get_posts(self):
-        # Create a new query object
+        # Get all posts
         query = self.db.query(kind="posts")
-
-        # Get all of the results of the query
-        results = query.all()
-
-        # Return the results
-        return results
+        posts = query.fetch()
+        return posts
 
     def get_post(self, id):
         # Get the post document
-        return self.db.query(kind="posts").filter("id", id).get()
+        query = self.db.query(kind="posts")
+        query.filter("id", id)
+        post_document = query.get()
+        return post_document
 
     def create_post(self, title, description, image, user, type):
         # Create a new post document
@@ -91,7 +98,9 @@ class DB:
     def update_post(self, id, title, description, image, user, type,
                     created_at):
         # Get the post document
-        post_document = self.db.query(kind="posts").filter("id", id).get()
+        query = self.db.query(kind="posts")
+        query.filter("id", id)
+        post_document = query.get()
 
         # Update the post document
         post_document.update({
@@ -107,4 +116,7 @@ class DB:
 
     def delete_post(self, id):
         # Delete the post document
-        self.db.query(kind="posts").filter("id", id).delete()
+        query = self.db.query(kind="posts")
+        query.filter("id", id)
+        post_document = query.get()
+        self.db.delete(post_document)
