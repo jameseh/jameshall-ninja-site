@@ -62,8 +62,14 @@ class DB:
         return None
 
     def get_posts(self):
-        # Get all posts
-        return self.db.query(kind="posts").all()
+        # Create a new query object
+        query = self.db.query(kind="posts")
+
+        # Get all of the results of the query
+        results = query.all()
+
+        # Return the results
+        return results
 
     def get_post(self, id):
         # Get the post document
