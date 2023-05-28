@@ -71,7 +71,7 @@ class DB:
     def get_posts(self):
         # Get all posts
         query = self.db.query(kind="posts")
-        posts = query.fetch()
+        posts = list(query.fetch())
         return posts
 
     def get_post(self, id):
