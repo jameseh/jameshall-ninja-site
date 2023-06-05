@@ -2,8 +2,9 @@ import os
 import logging
 from base64 import b64encode
 
+import auth0
 from sanic import Sanic
-from sanic.response import html, json
+from sanic.response import html, json, redirect
 from jinja2 import Environment, FileSystemLoader
 
 from utils.auth import Auth
@@ -13,7 +14,7 @@ from utils.db import DB
 
 # Setup app
 app = Sanic('jameshall_ninja_site')
-port = 8080
+port = os.environ.get('PORT')
 
 # Initiate database, to do: add configuration options
 db = DB(app)
@@ -29,6 +30,17 @@ app.ctx.base_template = base_template
 # Initialize the auth, security, db objects
 auth = Auth(app, db)
 security = Security()
+
+# Define auth0 environment variables
+client_id = os.environ("CLIENT_ID")
+client_secret = os.environ("CLIENT_SECRET")
+domain = os.environ("AUTH0_DOMAIN")
+
+client = auth0.WebAuthClient(
+    client_id=client_id,
+    client_secret=client_secret,
+    domain=domain,
+    )
 
 # Set the static folder
 app.static('/public', './public')
@@ -91,23 +103,47 @@ async def projects(request):
 
 
 @app.route("/login")
-async def login_get(request):
-    # Render the login page template
-    return html(env.get_template("login.html").render(
-        request=request, current_page=request.path))
+async def login(request):
+    # Get the authorization code from the request
+    code = request.args.get("code")
+
+    # Exchange the authorization code for tokens
+    tokens = await client.get_tokens(code)
+
+    # Authenticate the user with the access token
+    user = await auth.verify_id_token(tokens["access_token"])
+
+    # If the user is authenticated, redirect to the dashboard page
+    if user:
+        return redirect("/dashboard")
+
+    # Otherwise, redirect to the login page
+    return redirect("/login")
 
 
-@app.route("/login", methods=["POST"])
-async def login_post(request):
-    # Get the username and password from the request
-    username = request.form.get("username")
-    password = request.form.get("password")
+@app.route("/login/callback")
+async def login_callback(request):
+    # Get the access token from the request
+    access_token = request.args.get("access_token")
 
-    # Authenticate the user
-    response = auth.login(request, username, password)
+    # Authenticate the user with the access token
+    user = await auth.verify_id_token(access_token)
 
-    if response:
-        return response
+    # If the user is authenticated, redirect to the dashboard page
+    if user:
+        return redirect("/dashboard")
+
+    # Otherwise, redirect to the login page
+    return redirect("/login")
+
+
+@app.route("/logout")
+async def logout(request):
+    # Revoke the user's access token
+    await auth.revoke_access_token(request)
+
+    # Redirect the user to the homepage
+    return redirect("/")
 
 
 @auth.protected
@@ -161,34 +197,6 @@ async def post_post(request):
 
     return html(env.get_template("post.html").render(
         request=request, current_page=request.path, user=user))
-
-
-@app.route('/register', methods=['GET'])
-async def register(request):
-    # Render the register page template
-    return html(env.get_template("register.html").render(
-        request=request, current_page=request.path))
-
-
-@app.route("/register", methods=["POST"])
-async def register_post(request):
-    # Get the username and password from the request form
-    username = request.form.get("username")
-    password = request.form.get("password")
-
-    # Hash the password
-    hashed_password = security.hash_password(password)
-
-    # Check if the username is already taken
-    if db.get_user_by_username(username):
-        return json({"message": "Username already taken"})
-
-    # Add the user to the database
-    db.add_user(username, hashed_password)
-
-    # Redirect the user to the dashboard page
-    return html(env.get_template("dashboard.html").render(
-        request=request, current_page=request.path))
 
 
 @auth.protected

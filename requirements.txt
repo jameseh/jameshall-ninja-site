@@ -6,3 +6,4 @@ bcrypt==4.0.1
 pyjwt==2.7.0
 cryptography==40.0.2
 google-cloud-datastore==2.15.2
+auth0-python==4.2.0
