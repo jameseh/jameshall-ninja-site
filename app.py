@@ -62,10 +62,10 @@ async def login(request):
     code = request.args.get("code")
 
     # Get the user from Auth0
-    user = await social_auth.get_user(code)
+    user = await social_auth.users().userinfo(code)
 
     # Set the user in the session
-    request.session["user"] = user
+    request.ctx.session["user"] = user
 
     # Redirect the user to the dashboard page
     return redirect("/dashboard")
@@ -80,10 +80,10 @@ async def callback(request):
     tokens = await social_auth.get_user(code)
 
     # Get the user from Auth0
-    user = await social_auth.get_user(tokens["access_token"])
+    user = await social_auth.users().userinfo(tokens["access_token"])
 
     # Set the user in the session
-    request.session["user"] = user
+    request.ctx.session["user"] = user
 
     # Redirect the user to the dashboard page
     return redirect("/dashboard")
@@ -131,11 +131,11 @@ async def projects(request):
         posts=posts, request=request, current_page=request.path))
 
 
-@auth.protected
 @app.route("/post")
 async def get_post(request):
-    # Authenticate the user
-    user = await auth.authenticate(request)
+    # Verify the token
+    token = request.headers.get("Authorization")
+    user = await social_auth.verify_token(token)
 
     # If the user is not authenticated, redirect to the login page
     if not user:
@@ -154,11 +154,11 @@ async def get_post(request):
         post=post, request=request, current_page=request.path, user=user))
 
 
-@auth.protected
 @app.route("/post", methods=["POST"])
 async def post_post(request):
-    # Authenticate the user
-    user = await auth.authenticate(request)
+    # Verify the token
+    token = request.headers.get("Authorization")
+    user = await social_auth.verify_token(token)
 
     # If the user is not authenticated, redirect to the login page
     if not user:
@@ -191,11 +191,11 @@ async def post_post(request):
         request=request, current_page=request.path, user=user))
 
 
-@auth.protected
 @app.route("/dashboard")
 async def dashboard(request):
-    # Authenticate the user
-    user = await auth.authenticate(request)
+    # Verify the token
+    token = request.headers.get("Authorization")
+    user = await social_auth.verify_token(token)
 
     # If the user is not authenticated, redirect to the login page
     if not user:
