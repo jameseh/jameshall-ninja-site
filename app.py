@@ -56,6 +56,7 @@ async def homepage(request):
         posts=posts, request=request, current_page=request.path))
 
 
+@app.route("/login")
 async def login(request):
     # Get the authorization code from the request
     code = request.args.get("code")
