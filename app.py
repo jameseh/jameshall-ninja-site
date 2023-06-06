@@ -7,7 +7,6 @@ from sanic import Sanic
 from sanic.response import html, json, redirect
 from jinja2 import Environment, FileSystemLoader
 
-from utils.auth import Auth
 from utils.security import Security
 from utils.db import DB
 
@@ -35,7 +34,6 @@ social_auth = Social(
 )
 
 # Initialize the auth, security, db objects
-auth = Auth(app, db, social_auth)
 security = Security()
 
 # Set the static folder
