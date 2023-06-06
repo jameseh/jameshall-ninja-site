@@ -2,7 +2,7 @@ import os
 import logging
 from base64 import b64encode
 
-import auth0
+from auth0.authentication import Social
 from sanic import Sanic
 from sanic.response import html, json, redirect
 from jinja2 import Environment, FileSystemLoader
@@ -27,20 +27,16 @@ app.ctx.env = env
 base_template = env.get_template('base.html')
 app.ctx.base_template = base_template
 
+# Create an instance of the Social class
+social_auth = Social(
+    client_id=os.environ.get("CLIENT_ID"),
+    client_secret=os.environ.get("CLIENT_SECRET"),
+    domain=os.environ.get("AUTH0_DOMAIN"),
+)
+
 # Initialize the auth, security, db objects
-auth = Auth(app, db)
+auth = Auth(app, db, social_auth)
 security = Security()
-
-# Define auth0 environment variables
-client_id = os.environ("CLIENT_ID")
-client_secret = os.environ("CLIENT_SECRET")
-domain = os.environ("AUTH0_DOMAIN")
-
-client = auth0.WebAuthClient(
-    client_id=client_id,
-    client_secret=client_secret,
-    domain=domain,
-    )
 
 # Set the static folder
 app.static('/public', './public')
@@ -58,6 +54,38 @@ async def homepage(request):
     # Render the homepage template
     return html(env.get_template("index.html").render(
         posts=posts, request=request, current_page=request.path))
+
+
+async def login(request):
+    # Get the authorization code from the request
+    code = request.args.get("code")
+
+    # Get the user from Auth0
+    user = await social_auth.get_user(code)
+
+    # Set the user in the session
+    request.session["user"] = user
+
+    # Redirect the user to the dashboard page
+    return redirect("/dashboard")
+
+
+@app.route("/login/callback")
+async def callback(request):
+    # Get the authorization code from the request
+    code = request.args.get("code")
+
+    # Exchange the code for an access token and ID token
+    tokens = await social_auth.get_user(code)
+
+    # Get the user from Auth0
+    user = await social_auth.get_user(tokens["access_token"])
+
+    # Set the user in the session
+    request.session["user"] = user
+
+    # Redirect the user to the dashboard page
+    return redirect("/dashboard")
 
 
 @app.route("/about")
@@ -102,50 +130,6 @@ async def projects(request):
         posts=posts, request=request, current_page=request.path))
 
 
-@app.route("/login")
-async def login(request):
-    # Get the authorization code from the request
-    code = request.args.get("code")
-
-    # Exchange the authorization code for tokens
-    tokens = await client.get_tokens(code)
-
-    # Authenticate the user with the access token
-    user = await auth.verify_id_token(tokens["access_token"])
-
-    # If the user is authenticated, redirect to the dashboard page
-    if user:
-        return redirect("/dashboard")
-
-    # Otherwise, redirect to the login page
-    return redirect("/login")
-
-
-@app.route("/login/callback")
-async def login_callback(request):
-    # Get the access token from the request
-    access_token = request.args.get("access_token")
-
-    # Authenticate the user with the access token
-    user = await auth.verify_id_token(access_token)
-
-    # If the user is authenticated, redirect to the dashboard page
-    if user:
-        return redirect("/dashboard")
-
-    # Otherwise, redirect to the login page
-    return redirect("/login")
-
-
-@app.route("/logout")
-async def logout(request):
-    # Revoke the user's access token
-    await auth.revoke_access_token(request)
-
-    # Redirect the user to the homepage
-    return redirect("/")
-
-
 @auth.protected
 @app.route("/post")
 async def get_post(request):
@@ -157,9 +141,16 @@ async def get_post(request):
         return html(env.get_template("login.html").render(
             request=request, current_page=request.path))
 
+    # Get the post from the database
+    post = db.get_post(request.args.get("id"))
+
+    # If the post does not exist, redirect to the homepage
+    if not post:
+        return redirect("/")
+
     # Render the post page template
     return html(env.get_template("post.html").render(
-        request=request, current_page=request.path, user=user))
+        post=post, request=request, current_page=request.path, user=user))
 
 
 @auth.protected
@@ -210,9 +201,12 @@ async def dashboard(request):
         return html(env.get_template("login.html").render(
             request=request, current_page=request.path))
 
-    # Render the dashboard page template
+    # Get the user's posts from the database
+    posts = db.get_posts_by_user(user.username)
+
+    # Render the dashboard page template with the user's posts
     return html(env.get_template("dashboard.html").render(
-            request=request, current_page=request.path, user=user))
+        posts=posts, request=request, current_page=request.path, user=user))
 
 
 if __name__ == "__main__":

@@ -1,5 +1,3 @@
-from cryptography.hazmat.primitives.asymmetric import rsa
-import jwt
 from sanic.response import redirect
 from functools import wraps
 
@@ -7,70 +5,48 @@ from utils.security import Security
 
 
 class Auth:
-    def __init__(self, app, db):
+    def __init__(self, app, db, auth0_client):
         self.app = app
         self.db = db
         self.security = Security()
-
-        self.private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048
-        )
-        self.public_key = self.private_key.public_key()
+        self.auth0_client = auth0_client
 
     async def authenticate(self, request):
-        # Get the cookie
-        cookie = request.cookies.get("user_token")
+        # Get the access token from the request
+        access_token = request.headers.get("Authorization")
 
-        if not cookie:
+        if not access_token:
             return False
 
-        # Decode the token
-        token = jwt.decode(
-                    cookie,
-                    self.public_key,
-                    algorithms=["RS256"]
-                    )
+        # Get the user from Auth0
+        user = await self.auth0_client.get_user(access_token)
 
-        user = self.db.get_user_by_id(token["user_id"])
         if user:
             # Return the user
             return user
 
-    def login(self, request, username, password):
-        # Check if the username and password are valid
-        password = password.encode("utf-8")
-        hashed_password = self.db.get_password(username)
+    def login(self, request, code):
+        # Exchange the code for an access token and ID token
+        tokens = await self.auth0_client.get_tokens_from_code(code)
 
-        if self.security.verify_password(password, hashed_password):
-            # Get the user from the database
-            user = self.db.get_user_by_username(username)
+        # Get the user from Auth0
+        user = await self.auth0_client.get_user(tokens["access_token"])
 
-            # Define the payload
-            token = jwt.encode(
-                    {"user_id": user.id},
-                    self.private_key,
-                    algorithm="RS256"
-                    )
-            # Define the respone to bind the payload to
-            response = redirect("/dashboard")
+        # Set the user in the session
+        request.session["user"] = user
 
-            # Set cookie
-            response.add_cookie(
-                    "user_token",
-                    token,
-                    secure=False,
-                    max_age=6000000,
-                    httponly=True
-                    )
-            return response
+        # Redirect the user to the dashboard page
+        return redirect("/dashboard")
 
     async def protected(self, f):
         @wraps(f)
         async def decorated_function(request, *args, **kwargs):
-            user = await self.authenticate(request)
+            # Authenticate the user
+            user = await self.auth0_client.get_user(request)
 
             if user:
                 response = await f(request, user, *args, **kwargs)
                 return response
+            else:
+                return redirect("/login")
         return decorated_function
