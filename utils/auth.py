@@ -25,7 +25,7 @@ class Auth:
             # Return the user
             return user
 
-    def login(self, request, code):
+    async def login(self, request, code):
         # Exchange the code for an access token and ID token
         tokens = await self.auth0_client.get_tokens_from_code(code)
 
