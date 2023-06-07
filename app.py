@@ -2,7 +2,8 @@ import os
 import logging
 from base64 import b64encode
 
-from auth0.authentication import Social, TokenVerifier
+from auth0.authentication import Social
+from auth0.authentication.token_verifier import TokenVerifier
 from sanic import Sanic
 from sanic.response import html, json, redirect
 from jinja2 import Environment, FileSystemLoader
