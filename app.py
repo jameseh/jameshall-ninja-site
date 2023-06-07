@@ -2,6 +2,7 @@ import os
 import logging
 from base64 import b64encode
 
+from google.auth import default
 from auth0.authentication import Social
 from sanic import Sanic
 from sanic.response import html, json, redirect
@@ -33,6 +34,10 @@ social_auth = Social(
     domain=os.environ.get("AUTH0_DOMAIN"),
 )
 
+# Create a google oauth2 client
+google_credentials = default()
+
+
 # Initialize the auth, security, db objects
 security = Security()
 
@@ -56,9 +61,12 @@ async def homepage(request):
 
 @app.route("/login")
 async def login(request):
+    # Request an access token
+    access_token = google_credentials.get_access_token()
+
     # Redirect the user to the Google login page
-    response = await social_auth.login(
-            request.args["access_token"], "google")
+    response = await social_auth.login(access_token, "google")
+
     return response
 
 
