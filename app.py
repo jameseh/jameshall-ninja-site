@@ -73,7 +73,7 @@ async def login_callback(request):
     # Set the cookie
     response.set_cookie(
         response=request.response,
-        user_id=request.get["user_id"],
+        user_id=request.args["user_id"],
         cookie_max_age=cookie_max_age,
     )
 
