@@ -14,8 +14,8 @@ from utils.db import DB
 
 # Setup app
 app = Sanic('jameshall_ninja_site')
-port = os.environ.get('PORT')
-
+#port = os.environ.get('PORT')
+port = 8080
 # Initiate database, to do: add configuration options
 db = DB(app)
 
@@ -27,11 +27,16 @@ app.ctx.env = env
 base_template = env.get_template('base.html')
 app.ctx.base_template = base_template
 
+# Get client id, secret, and domain from environment variables
+client_id = os.environ.get("CLIENT_ID")
+client_secret = os.environ.get("CLIENT_SECRET")
+domain = os.environ.get("AUTH0_DOMAIN")
+
 # Create an instance of the Social class
 social_auth = Social(
-    client_id=os.environ.get("CLIENT_ID"),
-    client_secret=os.environ.get("CLIENT_SECRET"),
-    domain=os.environ.get("AUTH0_DOMAIN"),
+    client_id=client_id,
+    client_secret=client_secret,
+    domain=domain,
 )
 
 # Create a google oauth2 client
@@ -64,7 +69,7 @@ async def login(request):
     access_token = credentials.token
 
     # Redirect the user to the Google login page
-    response = await social_auth.login(access_token, "google")
+    response = await social_auth.login(client_id, access_token, "google")
 
     return response
 
