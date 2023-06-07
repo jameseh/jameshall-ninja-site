@@ -2,7 +2,7 @@ import os
 import logging
 from base64 import b64encode
 
-from auth0.authentication import Social
+from auth0.authentication import Social, TokenVerifier
 from sanic import Sanic
 from sanic.response import html, json, redirect
 from jinja2 import Environment, FileSystemLoader
@@ -33,6 +33,13 @@ social_auth = Social(
     domain=os.environ.get("AUTH0_DOMAIN"),
 )
 
+# Create an instance of TokenVerifier
+verifier = TokenVerifier(
+    client_id=os.environ.get("CLIENT_ID"),
+    client_secret=os.environ.get("CLIENT_SECRET"),
+    domain=os.environ.get("AUTH0_DOMAIN"),
+)
+
 # Initialize the auth, security, db objects
 security = Security()
 
@@ -55,36 +62,33 @@ async def homepage(request):
 
 
 @app.route("/login")
-async def login(request):
-    # Get the authorization code from the request
-    code = request.args.get("code")
-
-    # Get the user from Auth0
-    user = await social_auth.users().userinfo(code)
-
-    # Set the user in the session
-    request.ctx.session["user"] = user
-
-    # Redirect the user to the dashboard page
-    return redirect("/dashboard")
-
-
-@app.route("/login/callback")
 async def callback(request):
-    # Get the authorization code from the request
-    code = request.args.get("code")
+    # Dict containing access_token and id_token keys
+    access_and_id_token = await social_auth.login(
+            request.get["access_token"], "google")
 
-    # Exchange the code for an access token and ID token
-    tokens = await social_auth.get_user(code)
+    # Verify the ID token
+    verified_token = await verifier.verify_token(
+            access_and_id_token["id_token"])
 
-    # Get the user from Auth0
-    user = await social_auth.users().userinfo(tokens["access_token"])
+    # Get the user id from the token
+    user_id = verified_token["sub"]
 
-    # Set the user in the session
-    request.ctx.session["user"] = user
+    # Set a timelimit on the cookie
+    cookie_max_age = 60 * 60 * 24 * 7
+
+    # Set the response
+    response = redirect("/dashboard")
+
+    # Set the cookie
+    response.set_cookie(
+        response=request.response,
+        user_id=user_id,
+        cookie_max_age=cookie_max_age,
+    )
 
     # Redirect the user to the dashboard page
-    return redirect("/dashboard")
+    return response
 
 
 @app.route("/about")
@@ -131,9 +135,8 @@ async def projects(request):
 
 @app.route("/post")
 async def get_post(request):
-    # Verify the token
-    token = request.headers.get("Authorization")
-    user = await social_auth.verify_token(token)
+    # Get the user_id from cookie
+    user = request.cookies.get("user_id")
 
     # If the user is not authenticated, redirect to the login page
     if not user:
@@ -154,9 +157,8 @@ async def get_post(request):
 
 @app.route("/post", methods=["POST"])
 async def post_post(request):
-    # Verify the token
-    token = request.headers.get("Authorization")
-    user = await social_auth.verify_token(token)
+    # Get the user_id from cookie
+    user = request.cookies.get("user_id")
 
     # If the user is not authenticated, redirect to the login page
     if not user:
@@ -191,9 +193,8 @@ async def post_post(request):
 
 @app.route("/dashboard")
 async def dashboard(request):
-    # Verify the token
-    token = request.headers.get("Authorization")
-    user = await social_auth.verify_token(token)
+    # Get the user_id from cookie
+    user = request.cookies.get("user_id")
 
     # If the user is not authenticated, redirect to the login page
     if not user:
