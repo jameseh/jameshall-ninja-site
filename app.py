@@ -62,7 +62,7 @@ async def homepage(request):
 @app.route("/login")
 async def login(request):
     # Request an access token
-    access_token = google_credentials.get_access_token()
+    access_token = google_credentials.access_token
 
     # Redirect the user to the Google login page
     response = await social_auth.login(access_token, "google")
