@@ -1,21 +1,19 @@
-import os
-import logging
 from base64 import b64encode
 
 from google.auth import default
-from auth0.authentication import Social
+from firebase_admin.auth import FirebaseAuth
 from sanic import Sanic
 from sanic.response import html, json, redirect
 from jinja2 import Environment, FileSystemLoader
 
-from utils.security import Security
 from utils.db import DB
 
 
 # Setup app
 app = Sanic('jameshall_ninja_site')
-#port = os.environ.get('PORT')
+#  port = os.environ.get('PORT')
 port = 8080
+
 # Initiate database, to do: add configuration options
 db = DB(app)
 
@@ -27,23 +25,11 @@ app.ctx.env = env
 base_template = env.get_template('base.html')
 app.ctx.base_template = base_template
 
-# Get client id, secret, and domain from environment variables
-client_id = os.environ.get("CLIENT_ID")
-client_secret = os.environ.get("CLIENT_SECRET")
-domain = os.environ.get("AUTH0_DOMAIN")
-
-# Create an instance of the Social class
-social_auth = Social(
-    client_id=client_id,
-    client_secret=client_secret,
-    domain=domain,
-)
-
 # Create a google oauth2 client
 credentials, project = default()
 
-# Initialize the auth, security, db objects
-security = Security()
+# Create FirebaseAuth instance
+auth = FirebaseAuth()
 
 # Set the static folder
 app.static('/public', './public')
@@ -65,33 +51,35 @@ async def homepage(request):
 
 @app.route("/login")
 async def login(request):
-    # Request an access token
-    access_token = credentials.token
+    # Authenticate the user with Google
+    user = await auth.sign_in_with_google()
 
-    # Redirect the user to the Google login page
-    response = await social_auth.login(client_id, access_token,
-                                       "google-oauth2")
+    # Set the cookie
+    response = redirect("/dashboard")
+    response.set_cookie(
+        response=request.response,
+        user_id=user.uid,
+    )
 
     return response
 
 
 @app.route("/login/callback")
 async def login_callback(request):
-    # Set a timelimit on the cookie
-    cookie_max_age = 60 * 60 * 24 * 7
+    # Get the user ID from the cookie
+    user_id = request.cookies.get("user_id")
 
-    # Set the response
-    response = redirect("/dashboard")
+    # If the user is not authenticated, redirect to the login page
+    if not user_id:
+        return html(env.get_template("login.html").render(
+            request=request, current_page=request.path))
 
-    # Set the cookie
-    response.set_cookie(
-        response=request.response,
-        user_id=request.args["user_id"],
-        cookie_max_age=cookie_max_age,
-    )
+    # Get the user from Firebase
+    user = await auth.get_user(user_id)
 
-    # Redirect the user to the dashboard page
-    return response
+    # Render the dashboard page template with the user
+    return html(env.get_template("dashboard.html").render(
+        user=user, request=request, current_page=request.path))
 
 
 @app.route("/about")
@@ -99,21 +87,6 @@ async def about(request):
     # Render the "about" template
     return html(env.get_template("about.html").render(
         request=request, current_page=request.path))
-
-
-@app.route("/contact")
-async def contact(request):
-    # If the form is valid, send email to the contact email address
-    if request.form.is_valid():
-        email = request.form.email.data
-        message = request.form.message.data
-
-        logging.info("Sending email to %s", email)
-        security.send_email(email, message)
-
-        # Render the contact page template with the form
-        return html(env.get_template("contact.html").render(
-            request=request, current_page=request.path))
 
 
 @app.route("/blog")
