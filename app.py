@@ -58,7 +58,7 @@ async def homepage(request):
 async def login(request):
     # Redirect the user to the Google login page
     response = await social_auth.login(
-            request.get["access_token"], "google")
+            request.args["access_token"], "google")
     return response
 
 
