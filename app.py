@@ -2,7 +2,6 @@ import os
 import logging
 from base64 import b64encode
 
-from google.oauth2 import id_token
 from auth0.authentication import Social
 from sanic import Sanic
 from sanic.response import html, json, redirect
@@ -58,21 +57,13 @@ async def homepage(request):
 @app.route("/login")
 async def login(request):
     # Redirect the user to the Google login page
-    return redirect(social_auth.login_url("google"))
+    response = await social_auth.login(
+            request.get["access_token"], "google")
+    return response
 
 
 @app.route("/login/callback")
 async def login_callback(request):
-    # Dict containing access_token and id_token keys
-    access_and_id_token = await social_auth.login(
-            request.get["access_token"], "google")
-
-    id_info = id_token.verify_oauth2_token(
-            access_and_id_token["id_token"], request,
-            os.environ.get("CLIENT_ID"))
-
-    user_id = id_info['sub']
-
     # Set a timelimit on the cookie
     cookie_max_age = 60 * 60 * 24 * 7
 
@@ -82,7 +73,7 @@ async def login_callback(request):
     # Set the cookie
     response.set_cookie(
         response=request.response,
-        user_id=user_id,
+        user_id=request.get["user_id"],
         cookie_max_age=cookie_max_age,
     )
 
