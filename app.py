@@ -69,7 +69,8 @@ async def login(request):
     access_token = credentials.token
 
     # Redirect the user to the Google login page
-    response = await social_auth.login(client_id, access_token, "google")
+    response = await social_auth.login(client_id, access_token,
+                                       "google-oauth2")
 
     return response
 
