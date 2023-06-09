@@ -74,12 +74,25 @@ class DB:
         posts = list(query.fetch())
         return posts
 
-    def get_post(self, id):
+    def get_post(self, id, type):
         # Get the post document
         query = self.db.query(kind="posts")
         query.filter("id", id)
         post_document = query.get()
         return post_document
+
+    def get_posts_by_type(self, type):
+        # Get the post documents
+        posts = []
+        query = self.db.query(kind="posts")
+        query.add_filter("type", "=", type)
+        while True:
+            try:
+                post = next(query.fetch())
+                posts.append(post)
+            except StopIteration:
+                break
+        return posts
 
     def create_post(self, title, description, image, user, type):
         # Create a new post document

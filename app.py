@@ -1,9 +1,11 @@
+from functools import wraps
 from base64 import b64encode
 
 from google.auth import default
-from firebase_admin.auth import FirebaseAuth
+
 from sanic import Sanic
 from sanic.response import html, json, redirect
+
 from jinja2 import Environment, FileSystemLoader
 
 from utils.db import DB
@@ -28,11 +30,45 @@ app.ctx.base_template = base_template
 # Create a google oauth2 client
 credentials, project = default()
 
-# Create FirebaseAuth instance
-auth = FirebaseAuth()
 
-# Set the static folder
-app.static('/public', './public')
+def login_required(fn):
+    @wraps(fn)
+    async def wrapper(request):
+        # Check if the user is authenticated
+        user_id = request.cookies.get("user_id")
+
+        if not user_id:
+            # Redirect to the login page
+            return redirect("/login")
+
+        # Call the original function
+        return await fn(request, user_id)
+
+    return wrapper
+
+
+@app.route("/login")
+async def login(request):
+    # Get the user ID from the cookie
+    user_id = request.cookies.get("user_id")
+
+    if user_id:
+        # Redirect to the homepage
+        response = request.redirect("/dashboard")
+
+        # Set the user ID in the cookie
+        response.set_cookie(
+            name="user_id",
+            value=user_id,
+            secure=True,
+            httponly=True,
+        )
+
+        return response
+
+    # Render the login page template with the blog posts
+    return html(env.get_template("login.html").render(
+        request=request, current_page=request.path))
 
 
 @app.route("/")
@@ -49,39 +85,6 @@ async def homepage(request):
         posts=posts, request=request, current_page=request.path))
 
 
-@app.route("/login")
-async def login(request):
-    # Authenticate the user with Google
-    user = await auth.sign_in_with_google()
-
-    # Set the cookie
-    response = redirect("/dashboard")
-    response.set_cookie(
-        response=request.response,
-        user_id=user.uid,
-    )
-
-    return response
-
-
-@app.route("/login/callback")
-async def login_callback(request):
-    # Get the user ID from the cookie
-    user_id = request.cookies.get("user_id")
-
-    # If the user is not authenticated, redirect to the login page
-    if not user_id:
-        return html(env.get_template("login.html").render(
-            request=request, current_page=request.path))
-
-    # Get the user from Firebase
-    user = await auth.get_user(user_id)
-
-    # Render the dashboard page template with the user
-    return html(env.get_template("dashboard.html").render(
-        user=user, request=request, current_page=request.path))
-
-
 @app.route("/about")
 async def about(request):
     # Render the "about" template
@@ -92,7 +95,7 @@ async def about(request):
 @app.route("/blog")
 async def blog(request):
     # Get the blog posts from firestore
-    posts = db.get_post_by_type("Blog")
+    posts = db.get_posts_by_type("Blog")
 
     # Render the blog page template with the blog posts
     return html(env.get_template("blog.html").render(
@@ -109,6 +112,7 @@ async def projects(request):
         posts=posts, request=request, current_page=request.path))
 
 
+@login_required
 @app.route("/post")
 async def get_post(request):
     # Get the user_id from cookie
@@ -131,6 +135,7 @@ async def get_post(request):
         post=post, request=request, current_page=request.path, user=user))
 
 
+@login_required
 @app.route("/post", methods=["POST"])
 async def post_post(request):
     # Get the user_id from cookie
@@ -167,6 +172,7 @@ async def post_post(request):
         request=request, current_page=request.path, user=user))
 
 
+@login_required
 @app.route("/dashboard")
 async def dashboard(request):
     # Get the user_id from cookie

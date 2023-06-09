@@ -2,4 +2,4 @@ jinja2==3.1.2
 sanic==23.3.0
 cryptography==40.0.2
 google-cloud-datastore==2.15.2
-firebase_admin==6.1.0
+google-cloud-iam==2.12.0
