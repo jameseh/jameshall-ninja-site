@@ -1,3 +1,4 @@
+from os import environ
 from functools import wraps
 from base64 import b64encode
 
@@ -13,8 +14,8 @@ from utils.db import DB
 
 # Setup app
 app = Sanic('jameshall_ninja_site')
-#  port = os.environ.get('PORT')
-port = 8080
+port = environ.get('PORT')
+#  port = 8080
 
 # Initiate database, to do: add configuration options
 db = DB(app)
@@ -66,9 +67,7 @@ async def login(request):
 
         return response
 
-    # Render the login page template with the blog posts
-    return html(env.get_template("login.html").render(
-        request=request, current_page=request.path))
+    return request.redirect("/login")
 
 
 @app.route("/")

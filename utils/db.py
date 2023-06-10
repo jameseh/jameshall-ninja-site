@@ -2,14 +2,11 @@ from uuid import uuid4
 
 from google.cloud import datastore
 
-from utils.security import Security
-
 
 class DB:
     def __init__(self, app):
         self.app = app
         self.db = datastore.Client()
-        self.security = Security()
 
     def create_user_kind(self):
         # Create the collection "users"
@@ -30,18 +27,6 @@ class DB:
             "password": password,
         }
         self.db.put(user_document)
-
-    def login(self, request, username, password):
-        # Get the user document
-        query = self.db.query(kind="users")
-        query.filter("username", username)
-        user_document = query.get()
-
-        # Check if the user exists and the password is correct
-        if user_document is not None and self.security.verify_password(
-                password, user_document.get("password")):
-            return user_document
-        return None
 
     def get_user_by_username(self, username):
         # Get the user document
