@@ -1,4 +1,4 @@
-import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase-auth";
 
 const auth = getAuth();
 
