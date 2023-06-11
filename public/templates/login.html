@@ -57,4 +57,25 @@
   }
 </script>
 
+<script>
+  function login() {
+    const form = document.querySelector("form");
+    const data = new FormData(form);
+
+    firebase.auth().signInWithRedirect(data);
+
+    // Check the status of the redirect.
+    const response = firebase.auth().onAuthStateChanged();
+
+    // Handle any errors that may occur.
+    if (response.error) {
+      // Display an error message.
+      alert(response.error.message);
+    } else {
+      // The user has been authenticated.
+      // Redirect the user to the home page.
+      window.location.href = "/dashboard";
+    }
+  }
+</script>
 {% endblock %}

@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <title>{{ title }}</title>
 
+  <script>
+    // Wait for the Firebase code to load.
+    window.addEventListener("load", function() {
+      // Load your other JavaScript code.
+      <%- include('js/other-js.js') %>
+    });
+  </script>
+
   <!-- Material fonts documentation : https://developers.google.com/fonts/docs/getting_started -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap">
