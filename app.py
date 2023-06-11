@@ -67,7 +67,8 @@ async def login(request):
 
         return response
 
-    return request.redirect("/login")
+    return html(env.get_template("login.html").render(
+        request=request, current_page=request.path))
 
 
 @app.route("/")
