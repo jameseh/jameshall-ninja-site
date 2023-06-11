@@ -20,6 +20,9 @@ port = environ.get('PORT')
 # Initiate database, to do: add configuration options
 db = DB(app)
 
+# Set the static folder
+app.static('/public', './public')
+
 # Setup jinja2
 env = Environment(loader=FileSystemLoader('./public/templates'))
 app.ctx.env = env
@@ -55,7 +58,7 @@ async def login(request):
 
     if user_id:
         # Redirect to the homepage
-        response = request.redirect("/dashboard")
+        response = redirect("/dashboard")
 
         # Set the user ID in the cookie
         response.set_cookie(
