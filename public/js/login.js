@@ -1,20 +1,20 @@
-const firebase = require('firebase');
+import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 
-const auth = firebase.auth.getAuth();
-const provider = new firebase.auth.GoogleAuthProvider();
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
 
 async function signInWithGoogle() {
   // Sign in with Google using the redirect method
-  await auth.signInWithRedirect(auth, provider);
+  await signInWithRedirect(auth, provider);
 
   // Check the response status code
   const statusCode = response.status;
   if (statusCode === 200) {
     // Get the redirect result
-    const result = await auth.getRedirectResult(auth);
+    const result = await getRedirectResult(auth);
 
     // This gives you a Google Access Token. You can use it to access Google APIs.
-    const credential = auth.GoogleAuthProvider.credentialFromResult(result);
+    const credential = provider.credentialFromResult(result);
     const token = credential.accessToken;
 
     // The signed-in user info.
