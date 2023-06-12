@@ -1,3 +1,10 @@
+import * as firebase from 'https://www.gstatic.com/firebasejs/8.0/firebase-app.js';
+
+firebase.initializeApp({
+  apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
+  authDomain: "jameshall-ninja-387911.firebaseapp.com",
+});
+
 import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase-auth";
 
 const auth = getAuth();
