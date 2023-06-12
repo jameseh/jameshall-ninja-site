@@ -1,5 +1,3 @@
-import firebase from 'firebase/app';
-
 const auth = firebase.auth.getAuth();
 const provider = new firebase.auth.GoogleAuthProvider();
 
