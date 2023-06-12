@@ -1,3 +1,5 @@
+const firebase = require('firebase');
+
 const auth = firebase.auth.getAuth();
 const provider = new firebase.auth.GoogleAuthProvider();
 
