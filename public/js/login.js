@@ -1,11 +1,3 @@
-import firebase from 'https://www.gstatic.com/firebasejs/8.0/firebase-app.js';
-
-firebase.initializeApp({
-  apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
-  authDomain: "jameshall-ninja-387911.firebaseapp.com",
-});
-
-
 const auth = firebase.auth.getAuth();
 const provider = new firebase.auth.GoogleAuthProvider();
 
