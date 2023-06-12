@@ -6,10 +6,11 @@ firebase.initializeApp({
 });
 
 
-const auth = firebase.auth();
+const auth = firebase.auth.getAuth();
+const provider = new firebase.auth.GoogleAuthProvider();
 
 // Sign in with Google using the redirect method
-auth.signInWithRedirect();
+auth.signInWithRedirect(auth, provider);
 
 // Check the response status code
 const statusCode = response.status;
