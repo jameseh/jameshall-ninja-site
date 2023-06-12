@@ -1,5 +1,4 @@
 import * as firebase from 'https://www.gstatic.com/firebasejs/8.0/firebase-app.js';
-import { getAuth, getRedirectResult, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/8.0/firebase-auth.js';
 
 firebase.initializeApp({
   apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
@@ -7,24 +6,23 @@ firebase.initializeApp({
 });
 
 
-const auth = getAuth();
+const auth = firebase.auth();
 
-// Redirect to Firebase
-const redirectUrl = firebase.auth().getRedirectResult().redirectUrl;
-const response = await fetch(redirectUrl);
+// Sign in with Google using the redirect method
+auth.signInWithRedirect();
 
 // Check the response status code
 const statusCode = response.status;
 if (statusCode === 200) {
   // Get the redirect result
-  const result = await getRedirectResult(auth);
+  const result = await auth.getRedirectResult(auth);
 
   // This gives you a Google Access Token. You can use it to access Google APIs.
-  const credential = GoogleAuthProvider.credentialFromResult(result);
+  const credential = auth.GoogleAuthProvider.credentialFromResult(result);
   const token = credential.accessToken;
 
   // The signed-in user info.
-  const user = result.user;
+  const user = auth.currentUser;
   // IdP data available using getAdditionalUserInfo(result)
   // ...
 
@@ -69,3 +67,13 @@ if (statusCode === 200) {
   const errorMessage = await response.text();
   throw new Error(errorMessage);
 }
+
+window.addEventListener('popstate', (event) => {
+  // Check if the event is a redirect from the Google sign in flow
+  if (event.state && event.state.action === 'firebase-auth-redirect') {
+    // The user has signed in, get the user object
+    const user = auth.currentUser;
+
+    window.location.href = "/dashboard";
+  }
+});
