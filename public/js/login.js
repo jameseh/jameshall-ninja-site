@@ -1,4 +1,12 @@
+import * as firebase from "https://www.gstatic.com/firebasejs/8.0/firebase.js"
 import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+
+var config = {
+  apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
+  authDomain: "jameshall-ninja-387911.firebaseapp.com",
+};
+
+firebase.initializeApp(config);
 
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
