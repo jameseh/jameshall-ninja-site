@@ -1,5 +1,5 @@
 import * as firebase from 'https://www.gstatic.com/firebasejs/8.0/firebase-app.js';
-import * as firebaseAuth from 'https://www.gstatic.com/firebasejs/8.0/firebase-auth.js';
+import { getAuth, getRedirectResult, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/8.0/firebase-auth.js';
 
 firebase.initializeApp({
   apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
@@ -7,7 +7,7 @@ firebase.initializeApp({
 });
 
 
-const auth = firebaseAuth();
+const auth = getAuth();
 
 // Redirect to Firebase
 const redirectUrl = firebase.auth().getRedirectResult().redirectUrl;
