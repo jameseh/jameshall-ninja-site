@@ -1,9 +1,10 @@
 import firebase from 'https://www.gstatic.com/firebasejs/8.0/firebase-app.js';
 
-firebase.initializeApp({
-  apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
-  authDomain: "jameshall-ninja-387911.firebaseapp.com",
-});
+var config = {
+    apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
+    authDomain: "jameshall-ninja-387911.firebaseapp.com",
+  };
+  firebase.initializeApp(config);
 
 const menu = document.getElementById('menu');
 const hamburgerMenu = document.getElementById('hamburger-menu');

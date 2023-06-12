@@ -23,11 +23,11 @@ async function signInWithGoogle() {
     // Get the refresh token.
     const refreshToken = await auth.signInWithCredential(credential).refreshToken;
 
-    // Encrypt the refresh token before storing it in a cookie.
+    // Encrypt the refresh token before storing it in the cookie.
     const encryptedRefreshToken = encrypt(refreshToken);
 
-    // Set the refresh token expiration time.
-    auth.setRefreshTokenExpirationTime(refreshToken, 1000 * 60 * 60 * 24); // 1 day
+    // Set the refresh token expiration time to 1 day.
+    auth.setRefreshToken(encryptedRefreshToken, 1000 * 60 * 60 * 24);
 
     // Get the user email, username, and profile pic.
     const email = user.email;
@@ -35,9 +35,9 @@ async function signInWithGoogle() {
     const profilePicUrl = user.photoURL;
    
     // Create a cookie with the user's email, name, profile pic, and encrypted refresh token.
-    const cookie = `email=${email}; user_id=${name}; profilePicUrl=${profilePicUrl}; refreshToken=${encryptedRefreshtoken}`;
+    const cookie = `email=${email}; user_id=${name}; profilePicUrl=${profilePicUrl}; refreshToken=${encryptedRefreshToken}`;
 
-    // Set the cookie expiration time.
+    // Set the cookie expiration time to 1 hour.
     document.cookie = cookie;
 
     // Check if there is a refresh token in the cookie.
@@ -62,13 +62,3 @@ async function signInWithGoogle() {
     throw new Error(errorMessage);
   }
 }
-
-window.addEventListener('popstate', (event) => {
-  // Check if the event is a redirect from the Google sign in flow
-  if (event.state && event.state.action === 'firebase-auth-redirect') {
-    // The user has signed in, get the user object
-    const user = auth.currentUser;
-
-    window.location.href = "/dashboard";
-  }
-});
