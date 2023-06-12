@@ -41,11 +41,11 @@ async function signInWithGoogle() {
     document.cookie = cookie;
 
     // Check if there is a refresh token in the cookie.
-    const refreshToken = document.cookie.match(/refreshToken=(.*?);/)[1];
+    const refreshTokenIsValid = document.cookie.match(/refreshToken=(.*?);/)[1];
 
     // If there is a refresh token, decrypt it.
-    if (refreshToken) {
-      const decryptedRefreshToken = decrypt(refreshToken);
+    if (refreshTokenIsValid) {
+      const decryptedRefreshToken = decrypt(refreshTokenIsValid);
 
       // Check the validity of the refresh token.
       if (auth.isRefreshTokenValid(decryptedRefreshToken)) {
