@@ -1,13 +1,13 @@
 import * as firebase from 'https://www.gstatic.com/firebasejs/8.0/firebase-app.js';
+import * as firebaseAuth from 'https://www.gstatic.com/firebasejs/8.0/firebase-auth.js';
 
 firebase.initializeApp({
   apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
   authDomain: "jameshall-ninja-387911.firebaseapp.com",
 });
 
-import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase-auth";
 
-const auth = getAuth();
+const auth = firebaseAuth();
 
 // Redirect to Firebase
 const redirectUrl = firebase.auth().getRedirectResult().redirectUrl;
@@ -37,8 +37,16 @@ if (statusCode === 200) {
   // Set the refresh token expiration time.
   auth.setRefreshTokenExpirationTime(refreshToken, 1000 * 60 * 60 * 24); // 1 day
 
-  // Store the encrypted refresh token in a cookie.
-  document.cookie = "refreshToken=" + encryptedRefreshToken;
+  // Get the user email, username, and profile pic.
+  const email = user.email;
+  const name = user.displayName;
+  const profilePicUrl = user.photoURL;
+   
+  // Create a cookie with the user's email, name, profile pic, and encrypted refresh token.
+  const cookie = `email=${email}; user_id=${name}; profilePicUrl=${profilePicUrl}; refreshToken=${encryptedRefreshtoken}`;
+
+  // Set the cookie expiration time.
+  document.cookie = cookie;
 
   // Check if there is a refresh token in the cookie.
   const refreshToken = document.cookie.match(/refreshToken=(.*?);/)[1];
