@@ -1,5 +1,9 @@
+import * from "/public/js/base.js"
 import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 import { initializeApp } from 'firebase/app';
+import * as functions from "firebase/functions";
+
+const base = require('./base');
 
 const firebaseConfig = {
   apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
@@ -41,7 +45,8 @@ const provider = new GoogleAuthProvider();
 
 async function signInWithGoogle() {
   // Sign in with Google using the redirect method
-  await signInWithRedirect(auth, provider);
+  const credential = await auth.signInWithGoogle(auth, provider);
+  const user = await credential.user;
 
   // Check the response status code
   const statusCode = response.status;
@@ -55,8 +60,6 @@ async function signInWithGoogle() {
 
     // The signed-in user info.
     const user = auth.currentUser;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
 
     // Get the refresh token.
     const refreshToken = await auth.signInWithCredential(credential).refreshToken;
