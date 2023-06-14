@@ -1,12 +1,40 @@
-import * as firebase from "https://www.gstatic.com/firebasejs/8.0/firebase.js"
 import { getAuth, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { initializeApp } from 'firebase/app';
 
-var config = {
+const firebaseConfig = {
   apiKey: "AIzaSyAnnLDZAy1D8I6bG-JrL1yw4ocM9Dz2sUE",
   authDomain: "jameshall-ninja-387911.firebaseapp.com",
 };
 
-firebase.initializeApp(config);
+const app = initializeApp(firebaseConfig);
+
+var uiConfig = {
+  callbacks: {
+    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+      return true;
+    },
+    uiShown: function() {
+      document.getElementById('loader').style.display = 'none';
+    }
+  },
+  signInFlow: 'redirect',
+  signInSuccessUrl: '/dashboard',
+  signInOptions: [
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+  ],
+  tosUrl: '/tos',
+  privacyPolicyUrl: '/pp'
+};
+
+ui.start('#firebaseui-auth-container', {
+  signInOptions: [
+    // List of OAuth providers supported.
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+  ],
+});
+
+// Initialize the FirebaseUI Widget using Firebase.
+var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
