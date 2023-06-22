@@ -14,8 +14,8 @@ from utils.db import DB
 
 # Setup app
 app = Sanic('jameshall_ninja_site')
-port = environ.get('PORT')
-#  port = 8080
+#port = environ.get('PORT')
+port = 8080
 
 # Initiate database, to do: add configuration options
 db = DB(app)
